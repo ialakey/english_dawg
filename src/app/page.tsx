@@ -1,4 +1,3 @@
-// pages/test-english.js
 "use client";
 
 import React, { useState } from "react";
@@ -8,6 +7,7 @@ const LanguageTestPage = () => {
   const [answers, setAnswers] = useState(["", "", "", ""]);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [result, setResult] = useState("");
+  const [loading, setLoading] = useState(false); 
 
   const handleInputChange = (index, value) => {
     const updatedAnswers = [...answers];
@@ -22,14 +22,14 @@ const LanguageTestPage = () => {
       "What were your proudest achievements or goals you set for your career?",
       "How do you interpret this quote, and what practical steps can one take to live by it?",
     ];
-  
+
     const userOutput = answers
       .map(
         (answer, index) =>
           `Quesion:\n${questions[index]}\n\nUser output:\n${answer}`
       )
       .join("\n\n");
-  
+
     const prompt = `Evaluate the user's English in the following categories: Personal, Work, and Travel. Assess the responses based on grammar accuracy, vocabulary richness, relevance to the question, and overall quality. Additionally, provide an overall score (1-10) and general advice for improvement. Structure the output in the following valid JSON format:
 
 {
@@ -55,7 +55,9 @@ const LanguageTestPage = () => {
 
 Provide a clear, valid JSON response without any additional symbols, text, or formatting. Ensure the JSON is properly structured with no missing or extra characters.
 \n\n${userOutput}`;
-  
+
+    setLoading(true);
+
     try {
       const response = await fetch("https://api.openai.com/v1/chat/completions", {
         method: "POST",
@@ -70,20 +72,17 @@ Provide a clear, valid JSON response without any additional symbols, text, or fo
           temperature: 0.7,
         }),
       });
-  
+
       const data = await response.json();
       const rawContent = data.choices[0].message.content;
-  
-      // Логируем для отладки
+
       console.log("Raw Content from API:", rawContent);
-  
-      // Удаляем лишние символы (например, "```json" и "```")
+
       const cleanedContent = rawContent
         .replace(/```json/g, "")
         .replace(/```/g, "")
         .trim();
-  
-      // Проверяем валидность JSON перед парсингом
+
       try {
         const content = JSON.parse(cleanedContent);
         setResult(content.evaluation);
@@ -92,14 +91,16 @@ Provide a clear, valid JSON response without any additional symbols, text, or fo
         console.error("Cleaned Content:", cleanedContent);
         setResult("An error occurred while parsing the API response.");
       }
-  
+
       setModalIsOpen(true);
     } catch (error) {
       console.error("Error fetching GPT response:", error);
       setResult("An error occurred while processing your request.");
       setModalIsOpen(true);
+    } finally {
+      setLoading(false); 
     }
-  };  
+  };
 
   const renderResult = () => {
     if (typeof result === "string") {
@@ -107,97 +108,163 @@ Provide a clear, valid JSON response without any additional symbols, text, or fo
     }
 
     return (
-      <div>
-        <ul>
+      <div style={styles.resultContainer}>
+        <ul style={styles.resultList}>
           {Object.entries(result.categories).map(([category, details]) => (
-            <li key={category}>
-              <strong>{category.charAt(0).toUpperCase() + category.slice(1)}:</strong>
-              <p>Score: {details.score}</p>
-              <p>Comment: {details.comments}</p>
+            <li key={category} style={styles.resultItem}>
+              <strong style={styles.resultTitle}>
+                {category.charAt(0).toUpperCase() + category.slice(1)}:
+              </strong>
+              <p style={styles.resultText}>Score: {details.score}</p>
+              <p style={styles.resultText}>Comment: {details.comments}</p>
             </li>
           ))}
         </ul>
-        <h4>Overall Score:</h4>
-        <p>{result.overallScore}</p>
-        <h4>Advice:</h4>
-        <p>{result.advice}</p>
+        <h4 style={styles.resultHeading}>Overall Score:</h4>
+        <p style={styles.resultText}>{result.overallScore}</p>
+        <h4 style={styles.resultHeading}>Advice:</h4>
+        <p style={styles.resultText}>{result.advice}</p>
       </div>
     );
   };
 
   return (
-    <div style={{ maxWidth: "600px", margin: "0 auto", padding: "20px" }}>
-      <h1 style={{ textAlign: "center", fontWeight: "bold", fontSize: "2rem" }}>
-        TEST LEVEL LANGUAGE
-      </h1>
-      {[
+    <div style={styles.page}>
+      <h1 style={styles.title}>Language Test</h1>
+      {[ 
         "That's your name and tell us about yourself: e.g. your hobby, profession",
         "Where do you plan to travel in the future?",
         "What were your proudest achievements or goals you set for your career?",
-        "How do you interpret this quote, and what practical steps can one take to live by it?",
+        "How do you interpret this quote, and what practical steps can one take to live by it?"
       ].map((question, index) => (
-        <div key={index} style={{ marginBottom: "20px" }}>
-          <label style={{ display: "block", marginBottom: "10px" }}>{question}</label>
+        <div key={index} style={styles.questionContainer}>
+          <label style={styles.label}>{question}</label>
           <textarea
             value={answers[index]}
             onChange={(e) => handleInputChange(index, e.target.value)}
-            style={{
-              width: "100%",
-              padding: "10px",
-              resize: "vertical",
-              minHeight: "50px",
-            }}
+            style={styles.textarea}
           />
         </div>
       ))}
-      <button
-        onClick={handleSubmit}
-        style={{
-          display: "block",
-          margin: "20px auto",
-          padding: "10px 20px",
-          backgroundColor: "#0070f3",
-          color: "#fff",
-          border: "none",
-          borderRadius: "5px",
-          cursor: "pointer",
-        }}
-      >
+      <button onClick={handleSubmit} style={styles.submitButton}>
         Submit
       </button>
+      {loading && <div style={styles.loadingSpinner}></div>} {}
       <Modal
         isOpen={modalIsOpen}
         onRequestClose={() => setModalIsOpen(false)}
-        style={{
-          content: {
-            maxWidth: "500px",
-            margin: "auto",
-            padding: "20px",
-            borderRadius: "10px",
-            border: "1px solid #ccc",
-          },
-        }}
+        style={styles.modalStyles}
       >
-        <h2 style={{ textAlign: "center" }}>Result</h2>
+        <h2 style={styles.modalTitle}>Result</h2>
         {renderResult()}
-        <button
-          onClick={() => setModalIsOpen(false)}
-          style={{
-            display: "block",
-            margin: "20px auto",
-            padding: "10px 20px",
-            backgroundColor: "#0070f3",
-            color: "#fff",
-            border: "none",
-            borderRadius: "5px",
-            cursor: "pointer",
-          }}
-        >
+        <button onClick={() => setModalIsOpen(false)} style={styles.closeButton}>
           Close
         </button>
       </Modal>
     </div>
   );
+};
+
+const styles = {
+  page: {
+    maxWidth: "600px",
+    margin: "0 auto",
+    padding: "20px",
+    fontFamily: "Arial, sans-serif",
+    color: "#333",
+    position: "relative",
+  },
+  title: {
+    textAlign: "center",
+    fontWeight: "bold",
+    fontSize: "2rem",
+    color: "#0070f3",
+  },
+  questionContainer: {
+    marginBottom: "20px",
+  },
+  label: {
+    display: "block",
+    marginBottom: "10px",
+    fontWeight: "bold",
+  },
+  textarea: {
+    width: "100%",
+    padding: "10px",
+    border: "1px solid #ddd",
+    borderRadius: "5px",
+    minHeight: "50px",
+    resize: "vertical",
+  },
+  submitButton: {
+    display: "block",
+    margin: "20px auto",
+    padding: "10px 20px",
+    backgroundColor: "#0070f3",
+    color: "#fff",
+    border: "none",
+    borderRadius: "5px",
+    cursor: "pointer",
+    fontSize: "16px",
+  },
+  modalStyles: {
+    content: {
+      maxWidth: "500px",
+      margin: "auto",
+      padding: "20px",
+      borderRadius: "10px",
+      border: "1px solid #ccc",
+    },
+  },
+  modalTitle: {
+    textAlign: "center",
+    color: "#0070f3",
+    fontSize: "1.5rem",
+  },
+  closeButton: {
+    display: "block",
+    margin: "20px auto",
+    padding: "10px 20px",
+    backgroundColor: "#0070f3",
+    color: "#fff",
+    border: "none",
+    borderRadius: "5px",
+    cursor: "pointer",
+    fontSize: "16px",
+  },
+  resultContainer: {
+    margin: "20px 0",
+  },
+  resultList: {
+    listStyle: "none",
+    padding: 0,
+  },
+  resultItem: {
+    marginBottom: "15px",
+  },
+  resultTitle: {
+    fontWeight: "bold",
+    fontSize: "1.1rem",
+  },
+  resultText: {
+    margin: "5px 0",
+  },
+  resultHeading: {
+    fontWeight: "bold",
+    marginTop: "10px",
+  },
+  loadingSpinner: {
+    position: "absolute", 
+    top: "50%",
+    left: "50%", 
+    transform: "translate(-50%, -50%)", 
+    border: "8px solid #f3f3f3", 
+    borderTop: "8px solid #0070f3", 
+    borderRadius: "50%",
+    width: "50px",
+    height: "50px",
+    animation: "spin 2s linear infinite", 
+  },
 };
 
 export default LanguageTestPage;
