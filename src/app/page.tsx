@@ -2,12 +2,26 @@
 
 import React, { useState } from "react";
 import Modal from "react-modal";
+import { Bar } from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
+
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 const LanguageTestPage = () => {
   const [answers, setAnswers] = useState(["", "", "", ""]);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [result, setResult] = useState("");
-  const [loading, setLoading] = useState(false); 
+  const [loading, setLoading] = useState(false);
+  const [showDetails, setShowDetails] = useState(false);
+
   const questions = [
     "That's your name and tell us about yourself: e.g. your hobby, profession",
     "Where do you plan to travel in the future?",
@@ -22,7 +36,6 @@ const LanguageTestPage = () => {
   };
 
   const handleSubmit = async () => {
-
     const userOutput = answers
       .map(
         (answer, index) =>
@@ -49,7 +62,7 @@ const LanguageTestPage = () => {
       }
     },
     "overallScore": [integer, 1-10],
-    "advice": "[string providing general advice for improving the user's English proficiency]"
+    "advice": "[string providing actionable tips and strategies to enhance English proficiency and perform well in the IELTS exam, including practical exercises and techniques for writing module]"
   }
 }
 
@@ -66,9 +79,9 @@ Provide a clear, valid JSON response without any additional symbols, text, or fo
           Authorization: `Bearer "YOUR_CODE"`,
         },
         body: JSON.stringify({
-          model: "gpt-4-turbo-2024-04-09",
+          model: "gpt-4-turbo",
           messages: [{ role: "user", content: prompt }],
-          max_tokens: 300,
+          max_tokens: 400,
           temperature: 0.7,
         }),
       });
@@ -98,7 +111,7 @@ Provide a clear, valid JSON response without any additional symbols, text, or fo
       setResult("An error occurred while processing your request.");
       setModalIsOpen(true);
     } finally {
-      setLoading(false); 
+      setLoading(false);
     }
   };
 
@@ -107,23 +120,66 @@ Provide a clear, valid JSON response without any additional symbols, text, or fo
       return <p>{result}</p>;
     }
 
+    const chartData = {
+      labels: ["Personal", "Work", "Travel"],
+      datasets: [
+        {
+          label: "Scores",
+          data: [
+            result.categories.personal.score,
+            result.categories.work.score,
+            result.categories.travel.score,
+          ],
+          backgroundColor: ["#4caf50", "#ff9800", "#2196f3"],
+        },
+      ],
+    };
+
+    const chartOptions = {
+      responsive: true,
+      plugins: {
+        legend: {
+          position: "top",
+        },
+        title: {
+          display: true,
+          text: "Scores by Category",
+        },
+      },
+    };
+
     return (
       <div style={styles.resultContainer}>
-        <ul style={styles.resultList}>
-          {Object.entries(result.categories).map(([category, details]) => (
-            <li key={category} style={styles.resultItem}>
-              <strong style={styles.resultTitle}>
-                {category.charAt(0).toUpperCase() + category.slice(1)}:
-              </strong>
-              <p style={styles.resultText}>Score: {details.score}</p>
-              <p style={styles.resultText}>Comment: {details.comments}</p>
-            </li>
-          ))}
-        </ul>
-        <h4 style={styles.resultHeading}>Overall Score:</h4>
-        <p style={styles.resultText}>{result.overallScore}</p>
+        <div style={{ marginTop: "20px" }}>
+          <Bar data={chartData} options={chartOptions} />
+        </div>
         <h4 style={styles.resultHeading}>Advice:</h4>
         <p style={styles.resultText}>{result.advice}</p>
+        
+        <button 
+          style={styles.toggleButton} 
+          onClick={() => setShowDetails(!showDetails)}
+        >
+          {showDetails ? "Hide Details" : "Show More"}
+        </button>
+        
+        {showDetails && (
+          <>
+            <ul style={styles.resultList}>
+              {Object.entries(result.categories).map(([category, details]) => (
+                <li key={category} style={styles.resultItem}>
+                  <strong style={styles.resultTitle}>
+                    {category.charAt(0).toUpperCase() + category.slice(1)}:
+                  </strong>
+                  <p style={styles.resultText}>Score: {details.score}</p>
+                  <p style={styles.resultText}>Comment: {details.comments}</p>
+                </li>
+              ))}
+            </ul>
+            <h4 style={styles.resultHeading}>Overall Score:</h4>
+            <p style={styles.resultText}>{result.overallScore}</p>
+          </>
+        )}
       </div>
     );
   };
@@ -144,7 +200,7 @@ Provide a clear, valid JSON response without any additional symbols, text, or fo
       <button onClick={handleSubmit} style={styles.submitButton}>
         Submit
       </button>
-      {loading && <div style={styles.loadingSpinner}></div>} {}
+      {loading && <div style={styles.loadingSpinner}></div>}
       <Modal
         isOpen={modalIsOpen}
         onRequestClose={() => setModalIsOpen(false)}
@@ -259,6 +315,15 @@ const styles = {
     width: "50px",
     height: "50px",
     animation: "spin 2s linear infinite", 
+  },
+  toggleButton: {
+    marginTop: "10px",
+    padding: "10px 20px",
+    backgroundColor: "#007bff",
+    color: "#fff",
+    border: "none",
+    borderRadius: "5px",
+    cursor: "pointer",
   },
 };
 
