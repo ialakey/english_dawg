@@ -8,6 +8,12 @@ const LanguageTestPage = () => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [result, setResult] = useState("");
   const [loading, setLoading] = useState(false); 
+  const questions = [
+    "That's your name and tell us about yourself: e.g. your hobby, profession",
+    "Where do you plan to travel in the future?",
+    "What were your proudest achievements or goals you set for your career?",
+    "How do you interpret this quote, and what practical steps can one take to live by it?",
+  ];
 
   const handleInputChange = (index, value) => {
     const updatedAnswers = [...answers];
@@ -16,12 +22,6 @@ const LanguageTestPage = () => {
   };
 
   const handleSubmit = async () => {
-    const questions = [
-      "That's your name and tell us about yourself: e.g. your hobby, profession",
-      "Where do you plan to travel in the future?",
-      "What were your proudest achievements or goals you set for your career?",
-      "How do you interpret this quote, and what practical steps can one take to live by it?",
-    ];
 
     const userOutput = answers
       .map(
@@ -131,12 +131,7 @@ Provide a clear, valid JSON response without any additional symbols, text, or fo
   return (
     <div style={styles.page}>
       <h1 style={styles.title}>Language Test</h1>
-      {[ 
-        "That's your name and tell us about yourself: e.g. your hobby, profession",
-        "Where do you plan to travel in the future?",
-        "What were your proudest achievements or goals you set for your career?",
-        "How do you interpret this quote, and what practical steps can one take to live by it?"
-      ].map((question, index) => (
+      {questions.map((question, index) => (
         <div key={index} style={styles.questionContainer}>
           <label style={styles.label}>{question}</label>
           <textarea
