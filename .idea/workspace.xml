@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="444aaba8-4a29-4e95-be39-9839137d98e2" name="Changes" comment="Fixed: const questions" />
+    <list default="true" id="444aaba8-4a29-4e95-be39-9839137d98e2" name="Changes" comment="Changed: reported" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -56,7 +56,14 @@
       <option name="project" value="LOCAL" />
       <updated>1731726230172</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Changed: reported">
+      <created>1731765911436</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1731765911436</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -74,7 +81,8 @@
     <MESSAGE value="Added: Test to determine the user's level" />
     <MESSAGE value="Styles fixed and loading animation added" />
     <MESSAGE value="Fixed: const questions" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixed: const questions" />
+    <MESSAGE value="Changed: reported" />
+    <option name="LAST_COMMIT_MESSAGE" value="Changed: reported" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

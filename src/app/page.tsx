@@ -36,6 +36,9 @@ const LanguageTestPage = () => {
   };
 
   const handleSubmit = async () => {
+    setModalIsOpen(true);
+    setLoading(true);
+
     const userOutput = answers
       .map(
         (answer, index) =>
@@ -116,73 +119,81 @@ Provide a clear, valid JSON response without any additional symbols, text, or fo
   };
 
   const renderResult = () => {
-    if (typeof result === "string") {
-      return <p>{result}</p>;
-    }
+  if (loading) {
+    return <div style={styles.loadingSpinner}></div>;
+  }
 
-    const chartData = {
-      labels: ["Personal", "Work", "Travel"],
-      datasets: [
-        {
-          label: "Scores",
-          data: [
-            result.categories.personal.score,
-            result.categories.work.score,
-            result.categories.travel.score,
-          ],
-          backgroundColor: ["#4caf50", "#ff9800", "#2196f3"],
-        },
-      ],
-    };
+  if (typeof result === "string") {
+    return <p>{result}</p>;
+  }
 
-    const chartOptions = {
-      responsive: true,
-      plugins: {
-        legend: {
-          position: "top",
-        },
-        title: {
-          display: true,
-          text: "Scores by Category",
-        },
+  const chartData = {
+    labels: ["Personal", "Work", "Travel"],
+    datasets: [
+      {
+        label: "Scores",
+        data: [
+          result.categories.personal.score,
+          result.categories.work.score,
+          result.categories.travel.score,
+        ],
+        backgroundColor: ["#4caf50", "#ff9800", "#2196f3"],
       },
-    };
-
-    return (
-      <div style={styles.resultContainer}>
-        <div style={{ marginTop: "20px" }}>
-          <Bar data={chartData} options={chartOptions} />
-        </div>
-        <h4 style={styles.resultHeading}>Advice:</h4>
-        <p style={styles.resultText}>{result.advice}</p>
-        
-        <button 
-          style={styles.toggleButton} 
-          onClick={() => setShowDetails(!showDetails)}
-        >
-          {showDetails ? "Hide Details" : "Show More"}
-        </button>
-        
-        {showDetails && (
-          <>
-            <ul style={styles.resultList}>
-              {Object.entries(result.categories).map(([category, details]) => (
-                <li key={category} style={styles.resultItem}>
-                  <strong style={styles.resultTitle}>
-                    {category.charAt(0).toUpperCase() + category.slice(1)}:
-                  </strong>
-                  <p style={styles.resultText}>Score: {details.score}</p>
-                  <p style={styles.resultText}>Comment: {details.comments}</p>
-                </li>
-              ))}
-            </ul>
-            <h4 style={styles.resultHeading}>Overall Score:</h4>
-            <p style={styles.resultText}>{result.overallScore}</p>
-          </>
-        )}
-      </div>
-    );
+    ],
   };
+
+  const chartOptions = {
+    responsive: true,
+    scales: {
+      y: {
+        beginAtZero: true,
+        max: 10,
+      },
+    },
+    plugins: {
+      legend: {
+        position: "top",
+      },
+      title: {
+        display: true,
+        text: "Scores by Category",
+      },
+    },
+  };
+
+  return (
+    <div style={styles.resultContainer}>
+      <div style={{ marginTop: "20px" }}>
+        <Bar data={chartData} options={chartOptions} />
+      </div>
+      <h4 style={styles.resultHeading}>Advice:</h4>
+      <p style={styles.resultText}>{result.advice}</p>
+      <button
+        style={styles.toggleButton}
+        onClick={() => setShowDetails(!showDetails)}
+      >
+        {showDetails ? "Hide Details" : "Show More"}
+      </button>
+      {showDetails && (
+        <>
+          <ul style={styles.resultList}>
+            {Object.entries(result.categories).map(([category, details]) => (
+              <li key={category} style={styles.resultItem}>
+                <strong style={styles.resultTitle}>
+                  {category.charAt(0).toUpperCase() + category.slice(1)}:
+                </strong>
+                <p style={styles.resultText}>Score: {details.score}</p>
+                <p style={styles.resultText}>Comment: {details.comments}</p>
+              </li>
+            ))}
+          </ul>
+          <h4 style={styles.resultHeading}>Overall Score:</h4>
+          <p style={styles.resultText}>{result.overallScore}</p>
+        </>
+      )}
+    </div>
+  );
+};
 
   return (
     <div style={styles.page}>
