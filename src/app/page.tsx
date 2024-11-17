@@ -13,7 +13,14 @@ import {
   Legend,
 } from "chart.js";
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+);
 
 const LanguageTestPage = () => {
   const [answers, setAnswers] = useState(["", "", "", ""]);
@@ -39,7 +46,7 @@ const LanguageTestPage = () => {
     const userOutput = answers
       .map(
         (answer, index) =>
-          `Quesion:\n${questions[index]}\n\nUser output:\n${answer}`
+          `Quesion:\n${questions[index]}\n\nUser output:\n${answer}`,
       )
       .join("\n\n");
 
@@ -72,19 +79,24 @@ Provide a clear, valid JSON response without any additional symbols, text, or fo
     setLoading(true);
 
     try {
-      const response = await fetch("https://api.openai.com/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer "YOUR_CODE"`,
+      const response = await fetch(
+        // "https://api.openai.com/v1/chat/completions",
+        "http://localhost:11434/v1/chat/completions",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            // Authorization: `Bearer "${process.env.OPENAI_API_KEY}"`,
+          },
+          body: JSON.stringify({
+            // model: "gpt-4-turbo",
+            model: "llama3.2",
+            messages: [{ role: "user", content: prompt }],
+            max_tokens: 400,
+            temperature: 0.7,
+          }),
         },
-        body: JSON.stringify({
-          model: "gpt-4-turbo",
-          messages: [{ role: "user", content: prompt }],
-          max_tokens: 400,
-          temperature: 0.7,
-        }),
-      });
+      );
 
       const data = await response.json();
       const rawContent = data.choices[0].message.content;
@@ -155,14 +167,14 @@ Provide a clear, valid JSON response without any additional symbols, text, or fo
         </div>
         <h4 style={styles.resultHeading}>Advice:</h4>
         <p style={styles.resultText}>{result.advice}</p>
-        
-        <button 
-          style={styles.toggleButton} 
+
+        <button
+          style={styles.toggleButton}
           onClick={() => setShowDetails(!showDetails)}
         >
           {showDetails ? "Hide Details" : "Show More"}
         </button>
-        
+
         {showDetails && (
           <>
             <ul style={styles.resultList}>
@@ -208,7 +220,10 @@ Provide a clear, valid JSON response without any additional symbols, text, or fo
       >
         <h2 style={styles.modalTitle}>Result</h2>
         {renderResult()}
-        <button onClick={() => setModalIsOpen(false)} style={styles.closeButton}>
+        <button
+          onClick={() => setModalIsOpen(false)}
+          style={styles.closeButton}
+        >
           Close
         </button>
       </Modal>
@@ -305,16 +320,16 @@ const styles = {
     marginTop: "10px",
   },
   loadingSpinner: {
-    position: "absolute", 
+    position: "absolute",
     top: "50%",
-    left: "50%", 
-    transform: "translate(-50%, -50%)", 
-    border: "8px solid #f3f3f3", 
-    borderTop: "8px solid #0070f3", 
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    border: "8px solid #f3f3f3",
+    borderTop: "8px solid #0070f3",
     borderRadius: "50%",
     width: "50px",
     height: "50px",
-    animation: "spin 2s linear infinite", 
+    animation: "spin 2s linear infinite",
   },
   toggleButton: {
     marginTop: "10px",
