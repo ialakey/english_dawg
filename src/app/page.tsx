@@ -223,19 +223,19 @@ Provide a clear, valid JSON response without any additional symbols, text, or fo
 	};
 
 	return (
-		<div style={styles.page}>
-			<h1 style={styles.title}>Language Test</h1>
+		<div className="flex flex-col items-stretch w-[1000px] mx-auto my-10">
+			<div className="text-4xl font-bold mb-5 justify-center text-blue-500">Language Test</div>
 			{questions.map((question, index) => (
-				<div key={index} style={styles.questionContainer}>
-					<label style={styles.label}>{question}</label>
+				<div key={index} style={styles.questionContainer} className="mb-5">
+					<label style={styles.label} className="font-bold text-xl">{question}</label>
 					<textarea
 						value={answers[index]}
 						onChange={(e) => handleInputChange(index, e.target.value)}
-						style={styles.textarea}
+						className="w-full p-2 border border-gray-300 rounded-md min-h-20 resize-vertical text-lg"
 					/>
 				</div>
 			))}
-			<button onClick={handleSubmit} style={styles.submitButton}>
+			<button onClick={handleSubmit} className="bg-blue-500 text-white p-5 rounded-md text-xl font-bold">
 				Submit
 			</button>
 			<Modal
