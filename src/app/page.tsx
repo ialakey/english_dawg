@@ -34,7 +34,7 @@ const LanguageTestPage = () => {
   Modal.setAppElement('body')
 
 	const questions = [
-		"That's your name and tell us about yourself: e.g. your hobby, profession",
+		"What's your name and tell us about yourself: e.g. your hobby, profession",
 		"Where do you plan to travel in the future?",
 		"What were your proudest achievements or goals you set for your career?",
 		"How do you interpret this quote, and what practical steps can one take to live by it?",
