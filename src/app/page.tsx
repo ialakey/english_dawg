@@ -31,6 +31,8 @@ const LanguageTestPage = () => {
 	const [loading, setLoading] = useState(false);
 	const [showDetails, setShowDetails] = useState(false);
 
+  Modal.setAppElement('body')
+
 	const questions = [
 		"That's your name and tell us about yourself: e.g. your hobby, profession",
 		"Where do you plan to travel in the future?",
