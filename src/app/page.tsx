@@ -189,7 +189,7 @@ Provide a clear, valid JSON response without any additional symbols, text, or fo
 		};
 
 		return (
-			<div style={styles.resultContainer}>
+			<div className="relative overflow-x-scroll">
 				<div style={{ marginTop: "20px" }}>
 					<Bar data={chartData} options={chartOptions} />
 				</div>
@@ -241,16 +241,16 @@ Provide a clear, valid JSON response without any additional symbols, text, or fo
 			<Modal
 				isOpen={modalIsOpen}
 				onRequestClose={() => setModalIsOpen(false)}
-				style={styles.modalStyles}
+        className="relative overflow-x-scroll items-stretch w-[800px] h-[80vh] mx-auto my-12 bg-white rounded-md p-5 border-2 border-b-gray-700"
 			>
-				<h2 style={styles.modalTitle}>Result</h2>
+        <div className="flex flex-col text-4xl text-blue-500 font-bold">Result</div>
 				{renderResult()}
-				<button
+				{/* <button
 					onClick={() => setModalIsOpen(false)}
 					style={styles.closeButton}
 				>
 					Close
-				</button>
+				</button> */}
 			</Modal>
 		</div>
 	);
