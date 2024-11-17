@@ -149,6 +149,12 @@ Provide a clear, valid JSON response without any additional symbols, text, or fo
 
     const chartOptions = {
       responsive: true,
+      scales: {
+        y: {
+          beginAtZero: true,
+          max: 10,
+        },
+      },
       plugins: {
         legend: {
           position: "top",
